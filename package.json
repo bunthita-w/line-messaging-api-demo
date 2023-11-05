@@ -1,0 +1,24 @@
+{
+  "name": "line-messaging-api-demo",
+  "version": "1.0.0",
+  "description": "line messaging api demo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js",
+    "db": "npx json-server --watch db.json --port 3000 --id id"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.2",
+    "nodemon": "^3.0.1",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6"
+  },
+  "devDependencies": {
+    "json-server": "^0.17.4"
+  }
+}
