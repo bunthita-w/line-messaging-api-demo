@@ -10,17 +10,39 @@ app.use(bodyParser.json());
 
 app.use(express.static(__dirname + '/public'));
 
+/* Map images for imagemap type */
+
+app.get( '/images/imagemap_example/1040' , function(req,res){
+  res.sendFile(__dirname + '/public/images/imagemap_example/1040.png');
+});
+
+app.get( '/images/imagemap_example/700' , function(req,res){
+    res.sendFile(__dirname + '/public/images/imagemap_example/700.png');
+});
+
+app.get( '/images/imagemap_example/460' , function(req,res){
+    res.sendFile(__dirname + '/public/images/imagemap_example/460.png');
+});
+
+app.get( '/images/imagemap_example/300' , function(req,res){
+    res.sendFile(__dirname + '/public/images/imagemap_example/300.png');
+});
+
+app.get( '/images/imagemap_example/240' , function(req,res){
+    res.sendFile(__dirname + '/public/images/imagemap_example/240.png');
+});
+
+/* end Map images for imagemap type */
+
 app.get('/', (req, res) => {
     res.send('Welcome to LINE messaging API DEMO');
 });
 
 app.post('/webhook', (req, res) => {
-    //console.log("events: ",req.body.events[0]);
+    console.log("events: ",req.body.events[0]);
     const events = req.body.events;
     if(events.length > 0){
         if(events[0].type == "follow"){
-            let lineUserId = events[0].source.userId;
-            collectLineId(lineUserId);
             greetText(events);
         }else if(events[0].type == "unfollow"){
             console.log("User blocked this channel.")
@@ -35,203 +57,42 @@ app.listen(port, () => {
     console.log(`Start server at port ${port}.`)
 });
 
-function collectLineId(lineUserId){
-    request.get({
-        url: `${process.env.JSON_SERVER_URL}/users`,
-        json: true
-    },(error, response, body) => {
-        if (error) {
-            console.error('error:', error);
-        } else {
-            let existingUser = body.find(user => user.lineUserId === lineUserId);
-            console.log("existingUser: ",existingUser)
-            if(!existingUser){
-                createUser(lineUserId);
-            }
-        }
-    });
-}
-
-function createUser(lineUserId){
-    const newData = {
-        lineUserId: lineUserId,
-    };
-    request.post({
-        url: `${process.env.JSON_SERVER_URL}/users`,
-        json: true,
-        body: newData,
-    },(error, response, body) => {
-        if (error) {
-            console.error('error:', error);
-        } else {
-            console.log('success:', body);
-        }
-    });
-}
-
 function greetText(events){
-    // let message = [{
-    //     "type": "text",
-    //     "text": "Hello and welcome to our test channel! 😊"
-    // }];
-
     let message = [{
-        "type": "flex",
-        "altText": "Q1. Which is the API to create chatbot?",
-        "contents": {
-            "type": "bubble",
-            "hero": {
-              "type": "image",
-              "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
-              "size": "full",
-              "aspectRatio": "20:13",
-              "aspectMode": "cover",
+        "type": "text",
+        "text": "Hello and welcome to our test channel! 😊",
+        "quickReply": {
+          "items": [
+            {
+              "type": "action",
+              "imageUrl": `${process.env.DOMAIN}/images/lollipop.png`,
               "action": {
-                "type": "uri",
-                "uri": "http://linecorp.com/"
+                "type": "message",
+                "label": "Flex example",
+                "text": "Flex example"
               }
             },
-            "body": {
-              "type": "box",
-              "layout": "vertical",
-              "contents": [
-                {
-                  "type": "text",
-                  "text": "Brown Cafe",
-                  "weight": "bold",
-                  "size": "xl"
-                },
-                {
-                  "type": "box",
-                  "layout": "baseline",
-                  "margin": "md",
-                  "contents": [
-                    {
-                      "type": "icon",
-                      "size": "sm",
-                      "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png"
-                    },
-                    {
-                      "type": "icon",
-                      "size": "sm",
-                      "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png"
-                    },
-                    {
-                      "type": "icon",
-                      "size": "sm",
-                      "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png"
-                    },
-                    {
-                      "type": "icon",
-                      "size": "sm",
-                      "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png"
-                    },
-                    {
-                      "type": "icon",
-                      "size": "sm",
-                      "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gray_star_28.png"
-                    },
-                    {
-                      "type": "text",
-                      "text": "4.0",
-                      "size": "sm",
-                      "color": "#999999",
-                      "margin": "md",
-                      "flex": 0
-                    }
-                  ]
-                },
-                {
-                  "type": "box",
-                  "layout": "vertical",
-                  "margin": "lg",
-                  "spacing": "sm",
-                  "contents": [
-                    {
-                      "type": "box",
-                      "layout": "baseline",
-                      "spacing": "sm",
-                      "contents": [
-                        {
-                          "type": "text",
-                          "text": "Place",
-                          "color": "#aaaaaa",
-                          "size": "sm",
-                          "flex": 1
-                        },
-                        {
-                          "type": "text",
-                          "text": "Miraina Tower, 4-1-6 Shinjuku, Tokyo",
-                          "wrap": true,
-                          "color": "#666666",
-                          "size": "sm",
-                          "flex": 5
-                        }
-                      ]
-                    },
-                    {
-                      "type": "box",
-                      "layout": "baseline",
-                      "spacing": "sm",
-                      "contents": [
-                        {
-                          "type": "text",
-                          "text": "Time",
-                          "color": "#aaaaaa",
-                          "size": "sm",
-                          "flex": 1
-                        },
-                        {
-                          "type": "text",
-                          "text": "10:00 - 23:00",
-                          "wrap": true,
-                          "color": "#666666",
-                          "size": "sm",
-                          "flex": 5
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
+            {
+              "type": "action",
+              "imageUrl": `${process.env.DOMAIN}/images/bat.png`,
+              "action": {
+                "type": "message",
+                "label": "Template example",
+                "text": "Template example"
+              }
             },
-            "footer": {
-              "type": "box",
-              "layout": "vertical",
-              "spacing": "sm",
-              "contents": [
-                {
-                  "type": "button",
-                  "style": "link",
-                  "height": "sm",
-                  "action": {
-                    "type": "uri",
-                    "label": "CALL",
-                    "uri": "https://linecorp.com"
-                  }
-                },
-                {
-                  "type": "button",
-                  "style": "link",
-                  "height": "sm",
-                  "action": {
-                    "type": "uri",
-                    "label": "WEBSITE",
-                    "uri": "https://linecorp.com"
-                  }
-                },
-                {
-                  "type": "box",
-                  "layout": "vertical",
-                  "contents": [],
-                  "margin": "sm"
-                }
-              ],
-              "flex": 0
+            {
+              "type": "action",
+              "imageUrl": `${process.env.DOMAIN}/images/ghost.png`,
+              "action": {
+                "type": "message",
+                "label": "Imagemap example",
+                "text": "Imagemap example"
+              }
             }
-          }
-    }];
-
+          ]
+        }
+    }]
     replyRequest(events[0].replyToken, message);
 }
 
@@ -261,11 +122,517 @@ function replyMessage(events){
 }
 
 function replyText(events){
+    switch(events[0].message.text) {
+        case 'Flex example':
+            createFlexMessage(events);
+            break;
+        case 'Template example':
+            createTemplateMessage(events);
+            break;
+        case 'Imagemap example':
+            createImagemapMessage(events);
+            break;
+        default:
+            createTextMessage(events);
+    }
+}
+
+function createFlexMessage(events){
+    let message = [{
+        "type": "flex",
+        "altText": "Q1. Which is the API to create chatbot?",
+        "contents": {
+            "type": "carousel",
+            "contents": [
+              {
+                "type": "bubble",
+                "body": {
+                  "type": "box",
+                  "layout": "vertical",
+                  "contents": [
+                    {
+                      "type": "image",
+                      "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip1.jpg",
+                      "size": "full",
+                      "aspectMode": "cover",
+                      "aspectRatio": "2:3",
+                      "gravity": "top"
+                    },
+                    {
+                      "type": "box",
+                      "layout": "vertical",
+                      "contents": [
+                        {
+                          "type": "box",
+                          "layout": "vertical",
+                          "contents": [
+                            {
+                              "type": "text",
+                              "text": "Brown's T-shirts",
+                              "size": "xl",
+                              "color": "#ffffff",
+                              "weight": "bold"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "box",
+                          "layout": "baseline",
+                          "contents": [
+                            {
+                              "type": "text",
+                              "text": "¥35,800",
+                              "color": "#ebebeb",
+                              "size": "sm",
+                              "flex": 0
+                            },
+                            {
+                              "type": "text",
+                              "text": "¥75,000",
+                              "color": "#ffffffcc",
+                              "decoration": "line-through",
+                              "gravity": "bottom",
+                              "flex": 0,
+                              "size": "sm"
+                            }
+                          ],
+                          "spacing": "lg"
+                        },
+                        {
+                          "type": "box",
+                          "layout": "vertical",
+                          "contents": [
+                            {
+                              "type": "filler"
+                            },
+                            {
+                              "type": "box",
+                              "layout": "baseline",
+                              "contents": [
+                                {
+                                  "type": "filler"
+                                },
+                                {
+                                  "type": "icon",
+                                  "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip14.png"
+                                },
+                                {
+                                  "type": "text",
+                                  "text": "Add to cart",
+                                  "color": "#ffffff",
+                                  "flex": 0,
+                                  "offsetTop": "-2px"
+                                },
+                                {
+                                  "type": "filler"
+                                }
+                              ],
+                              "spacing": "sm"
+                            },
+                            {
+                              "type": "filler"
+                            }
+                          ],
+                          "borderWidth": "1px",
+                          "cornerRadius": "4px",
+                          "spacing": "sm",
+                          "borderColor": "#ffffff",
+                          "margin": "xxl",
+                          "height": "40px",
+                          "action": {
+                            "type": "message",
+                            "label": "Add to cart",
+                            "text": "Add to cart"
+                          }
+                        }
+                      ],
+                      "position": "absolute",
+                      "offsetBottom": "0px",
+                      "offsetStart": "0px",
+                      "offsetEnd": "0px",
+                      "backgroundColor": "#03303Acc",
+                      "paddingAll": "20px",
+                      "paddingTop": "18px"
+                    },
+                    {
+                      "type": "box",
+                      "layout": "vertical",
+                      "contents": [
+                        {
+                          "type": "text",
+                          "text": "SALE",
+                          "color": "#ffffff",
+                          "align": "center",
+                          "size": "xs",
+                          "offsetTop": "3px"
+                        }
+                      ],
+                      "position": "absolute",
+                      "cornerRadius": "20px",
+                      "offsetTop": "18px",
+                      "backgroundColor": "#ff334b",
+                      "offsetStart": "18px",
+                      "height": "25px",
+                      "width": "53px"
+                    }
+                  ],
+                  "paddingAll": "0px"
+                }
+              },
+              {
+                "type": "bubble",
+                "body": {
+                  "type": "box",
+                  "layout": "vertical",
+                  "contents": [
+                    {
+                      "type": "image",
+                      "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip2.jpg",
+                      "size": "full",
+                      "aspectMode": "cover",
+                      "aspectRatio": "2:3",
+                      "gravity": "top"
+                    },
+                    {
+                      "type": "box",
+                      "layout": "vertical",
+                      "contents": [
+                        {
+                          "type": "box",
+                          "layout": "vertical",
+                          "contents": [
+                            {
+                              "type": "text",
+                              "text": "Cony's T-shirts",
+                              "size": "xl",
+                              "color": "#ffffff",
+                              "weight": "bold"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "box",
+                          "layout": "baseline",
+                          "contents": [
+                            {
+                              "type": "text",
+                              "text": "¥35,800",
+                              "color": "#ebebeb",
+                              "size": "sm",
+                              "flex": 0
+                            },
+                            {
+                              "type": "text",
+                              "text": "¥75,000",
+                              "color": "#ffffffcc",
+                              "decoration": "line-through",
+                              "gravity": "bottom",
+                              "flex": 0,
+                              "size": "sm"
+                            }
+                          ],
+                          "spacing": "lg"
+                        },
+                        {
+                          "type": "box",
+                          "layout": "vertical",
+                          "contents": [
+                            {
+                              "type": "filler"
+                            },
+                            {
+                              "type": "box",
+                              "layout": "baseline",
+                              "contents": [
+                                {
+                                  "type": "filler"
+                                },
+                                {
+                                  "type": "icon",
+                                  "url": "https://scdn.line-apps.com/n/channel_devcenter/img/flexsnapshot/clip/clip14.png"
+                                },
+                                {
+                                  "type": "text",
+                                  "text": "Add to cart",
+                                  "color": "#ffffff",
+                                  "flex": 0,
+                                  "offsetTop": "-2px"
+                                },
+                                {
+                                  "type": "filler"
+                                }
+                              ],
+                              "spacing": "sm"
+                            },
+                            {
+                              "type": "filler"
+                            }
+                          ],
+                          "borderWidth": "1px",
+                          "cornerRadius": "4px",
+                          "spacing": "sm",
+                          "borderColor": "#ffffff",
+                          "margin": "xxl",
+                          "height": "40px",
+                          "action": {
+                            "type": "message",
+                            "label": "Add to cart",
+                            "text": "Add to cart"
+                          }
+                        }
+                      ],
+                      "position": "absolute",
+                      "offsetBottom": "0px",
+                      "offsetStart": "0px",
+                      "offsetEnd": "0px",
+                      "backgroundColor": "#9C8E7Ecc",
+                      "paddingAll": "20px",
+                      "paddingTop": "18px"
+                    },
+                    {
+                      "type": "box",
+                      "layout": "vertical",
+                      "contents": [
+                        {
+                          "type": "text",
+                          "text": "SALE",
+                          "color": "#ffffff",
+                          "align": "center",
+                          "size": "xs",
+                          "offsetTop": "3px"
+                        }
+                      ],
+                      "position": "absolute",
+                      "cornerRadius": "20px",
+                      "offsetTop": "18px",
+                      "backgroundColor": "#ff334b",
+                      "offsetStart": "18px",
+                      "height": "25px",
+                      "width": "53px"
+                    }
+                  ],
+                  "paddingAll": "0px"
+                }
+              }
+            ]
+          }
+    },{
+        "type": "text",
+        "text": "Do you want to do anything else? 😊",
+        "quickReply": {
+          "items": [
+            {
+              "type": "action",
+              "imageUrl": `${process.env.DOMAIN}/images/lollipop.png`,
+              "action": {
+                "type": "message",
+                "label": "Flex example",
+                "text": "Flex example"
+              }
+            },
+            {
+              "type": "action",
+              "imageUrl": `${process.env.DOMAIN}/images/bat.png`,
+              "action": {
+                "type": "message",
+                "label": "Template example",
+                "text": "Template example"
+              }
+            },
+            {
+              "type": "action",
+              "imageUrl": `${process.env.DOMAIN}/images/ghost.png`,
+              "action": {
+                "type": "message",
+                "label": "Imagemap example",
+                "text": "Imagemap example"
+              }
+            }
+          ]
+        }
+    }];
+    replyRequest(events[0].replyToken, message);
+}
+
+function createTemplateMessage(events){
+    let message = [{
+        "type": "template",
+        "altText": "This is a carousel template",
+        "template": {
+          "type": "carousel",
+          "columns": [
+            {
+              "thumbnailImageUrl": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
+              "imageBackgroundColor": "#FFFFFF",
+              "title": "Item 1",
+              "text": "description",
+              "defaultAction": {
+                "type": "uri",
+                "label": "View detail",
+                "uri": "https://www.google.com/"
+              },
+              "actions": [
+                {
+                  "type": "uri",
+                  "label": "View detail",
+                  "uri": "https://developers.line.biz/en/reference/messaging-api/#template-messages"
+                }
+              ]
+            },
+            {
+              "thumbnailImageUrl": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
+              "imageBackgroundColor": "#000000",
+              "title": "Item 2",
+              "text": "description",
+              "defaultAction": {
+                "type": "uri",
+                "label": "View detail",
+                "uri": "https://www.google.com/"
+              },
+              "actions": [
+                {
+                  "type": "uri",
+                  "label": "View detail",
+                  "uri": "https://developers.line.biz/en/reference/messaging-api/#template-messages"
+                }
+              ]
+            }
+          ],
+          "imageAspectRatio": "rectangle",
+          "imageSize": "cover"
+        }
+      },{
+        "type": "text",
+        "text": "Do you want to do anything else? 😊",
+        "quickReply": {
+          "items": [
+            {
+              "type": "action",
+              "imageUrl": `${process.env.DOMAIN}/images/lollipop.png`,
+              "action": {
+                "type": "message",
+                "label": "Flex example",
+                "text": "Flex example"
+              }
+            },
+            {
+              "type": "action",
+              "imageUrl": `${process.env.DOMAIN}/images/bat.png`,
+              "action": {
+                "type": "message",
+                "label": "Template example",
+                "text": "Template example"
+              }
+            },
+            {
+              "type": "action",
+              "imageUrl": `${process.env.DOMAIN}/images/ghost.png`,
+              "action": {
+                "type": "message",
+                "label": "Imagemap example",
+                "text": "Imagemap example"
+              }
+            }
+          ]
+        }
+    }];
+    replyRequest(events[0].replyToken, message);
+}
+
+function createImagemapMessage(events){
+    let message = [{
+        "type": "imagemap",
+        "baseUrl": `${process.env.DOMAIN}/images/imagemap_example`,
+        "altText": "This is an imagemap example",
+        "baseSize": {
+          "width": 1040,
+          "height": 644
+        },
+        "actions": [
+          {
+            "type": "message",
+            "area": {
+              "x": 67,
+              "y": 43,
+              "width": 442,
+              "height": 234
+            },
+            "text": "Text Area 1"
+          },
+          {
+            "type": "message",
+            "area": {
+              "x": 541,
+              "y": 41,
+              "width": 411,
+              "height": 234
+            },
+            "text": "Text Area 2"
+          },
+          {
+            "type": "uri",
+            "area": {
+              "x": 64,
+              "y": 316,
+              "width": 438,
+              "height": 259
+            },
+            "linkUri": "https://developers.line.biz/en/reference/messaging-api/#imagemap-message"
+          },
+          {
+            "type": "message",
+            "area": {
+              "x": 539,
+              "y": 321,
+              "width": 417,
+              "height": 252
+            },
+            "text": "Text Area 4"
+          }
+        ]
+    },{
+        "type": "text",
+        "text": "Do you want to do anything else? 😊",
+        "quickReply": {
+          "items": [
+            {
+              "type": "action",
+              "imageUrl": `${process.env.DOMAIN}/images/lollipop.png`,
+              "action": {
+                "type": "message",
+                "label": "Flex example",
+                "text": "Flex example"
+              }
+            },
+            {
+              "type": "action",
+              "imageUrl": `${process.env.DOMAIN}/images/bat.png`,
+              "action": {
+                "type": "message",
+                "label": "Template example",
+                "text": "Template example"
+              }
+            },
+            {
+              "type": "action",
+              "imageUrl": `${process.env.DOMAIN}/images/ghost.png`,
+              "action": {
+                "type": "message",
+                "label": "Imagemap example",
+                "text": "Imagemap example"
+              }
+            }
+          ]
+        }
+    }];
+    replyRequest(events[0].replyToken, message);
+}
+
+function createTextMessage(events){
     let message = [{
         "type": "text",
         "text": events[0].message.text
     }];
-
     replyRequest(events[0].replyToken, message);
 }
 
@@ -354,33 +721,6 @@ function generateUniqueId(){
     const uniqueId = `${timestamp}_${Math.floor(Math.random() * 1000)}`;
     return uniqueId;
 }
-
-// function getUserProfile(lineUserId){
-//     let headers = {
-//         'Content-Type': 'application/json',
-//         'Authorization': `Bearer ${process.env.CHANNEL_ACCESS_TOKEN}`
-//     }
-//     request.get({
-//         url: `https://api.line.me/v2/bot/profile/${lineUserId}`,
-//         headers: headers
-//     }, (err, res, body) => {
-//         console.log('profiless: ' + body);
-//         return body;
-//     });
-// }
-
-// function checkLINEname(){
-
-// }
-
-// function startsWithM(name) {
-//     return name.toLowerCase().startsWith('m');
-// }
-
-// function addUserToAudienceGroup(lineUserId){
-//     let userProfile = getUserProfile(lineUserId);
-//     console.log("userss", userProfile)
-// }
 
 app.post('/pushMessage', (req, res) => {
     let lineId = req.body.lineId;
